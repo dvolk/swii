@@ -1,8 +1,8 @@
 # swii - silly web ii
 
-![swii screenshot](https://i.imgur.com/julYbzm.png)
+![swii screenshot](https://i.imgur.com/M9gZ8qJ.png)
 
-swii is a very simple, no javascript web frontend for ii. If you're not familiar with ii, don't worry. It's an irc client for weirdos.
+swii is a very simple, no javascript web frontend for ii (https://tools.suckless.org/ii/)
 
 You need ii installed and at least one instance running and connected to a server. swii can use multiple ii's connected to different servers.
 
@@ -13,7 +13,9 @@ You need ii installed and at least one instance running and connected to a serve
 
 Here `dir` is the directory containing your `ii` directories.
 
-For example if you started your ii as `ii -i /home/username/irc` then your irc_home would be `/home/username`
+For example if you started your ii as `ii -i /home/username/irc` then your `irc_home` would be `/home/username`
+
+Now open your browser at `http(s)://<yourhost>:<yourport>/chat/<dir>`
 
 ## Public-facing swii
 
@@ -29,7 +31,7 @@ for example
     /chat/username2/*
     ...
 
-where `username1` and `username2` are ii dirs inside the swii irc_home
+where `username1` and `username2` are ii dirs inside the swii `irc_home`
 
 sigh.
 
@@ -37,7 +39,7 @@ sigh.
 
 ### Why doesn't the page refresh automatically?
 
-We're keeping it simple. If that's what you want then get a browser extension that does it.
+If that's what you want then get a browser extension that does it.
 
 ### Why can't I scroll back infinitely?
 
