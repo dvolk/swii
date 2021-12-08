@@ -1,6 +1,6 @@
 # swii - silly web ii
 
-![swii screenshot](https://i.imgur.com/gWAZ7XO.png)
+![swii screenshot](https://i.imgur.com/julYbzm.png)
 
 swii is a very simple, no javascript web frontend for ii. If you're not familiar with ii, don't worry. It's an irc client for weirdos.
 
