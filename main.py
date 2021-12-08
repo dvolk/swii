@@ -64,8 +64,6 @@ view_template = site_header + """
 </div>
 <div class="w3-col s10 w3-light-gray w3-padding">
 <p>
-<input class="w3-input" type="text" placeholder="Type message or command here"></input>
-</p>
 <table id="table_id">
 {%- for line in lines if line %}
 {% set time_str, line_str = ii_line_datefmt(line) %}
@@ -74,6 +72,11 @@ view_template = site_header + """
 <td>{{ line_str }}</td>
 {% endfor %}
 </table>
+</p>
+<p>
+<form method="POST">
+<input class="w3-input" type="text" name="user_msg" placeholder="Type message or command here"></input>
+</form>
 </p>
 """ + site_footer
 
@@ -95,7 +98,15 @@ def get_channels(irc_dir):
     return channels
 
 
-@app.route("/chat/<irc_dir>/<network_name>/<channel_name>")
+@app.route("/chat/<irc_dir>")
+def chat_index(irc_dir):
+    channels = get_channels(irc_dir)
+    network_name = list(channels.keys())[0]
+    channel_name = channels[network_name][0]
+    return chat(irc_dir, network_name, channel_name)
+
+
+@app.route("/chat/<irc_dir>/<network_name>/<channel_name>", methods=["GET", "POST"])
 def chat(irc_dir, network_name, channel_name):
     channel_name = channel_name.replace("$", "#")
     channels = get_channels(irc_dir)
@@ -103,11 +114,19 @@ def chat(irc_dir, network_name, channel_name):
     with open(irc_home / irc_dir / network_name / channel_name / "out") as f:
         lines = tailer.tail(f, 25)
 
-    return flask.render_template_string(view_template,
-                                        irc_dir=irc_dir, network_name=network_name, channel_name=channel_name,
-                                        channels=channels,
-                                        lines=reversed(lines),
-                                        ii_line_datefmt=ii_line_datefmt)
+    if flask.request.method == "POST":
+        user_msg = flask.request.form.get("user_msg")
+        print(flask.request.form)
+        with open(irc_home / irc_dir / network_name / channel_name / "in", "w") as f:
+            f.write(user_msg + "\n")
+        return flask.redirect(flask.url_for("chat", irc_dir=irc_dir, network_name=network_name, channel_name=channel_name))
+    else:
+        return flask.render_template_string(view_template,
+                                            irc_dir=irc_dir, network_name=network_name, channel_name=channel_name,
+                                            channels=channels,
+                                            lines=lines,
+                                            ii_line_datefmt=ii_line_datefmt)
+
 
 
 
