@@ -1,5 +1,7 @@
 # swii - silly web ii
 
+![swii screenshot](https://i.imgur.com/gWAZ7XO.png)
+
 swii is a very simple, no javascript web frontend for ii. If you're not familiar with ii, don't worry. It's an irc client for weirdos.
 
 You need ii installed and at least one instance running and connected to a server. swii can use multiple ii's connected to different servers.
