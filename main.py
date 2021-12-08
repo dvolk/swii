@@ -46,7 +46,7 @@ view_template = site_header + """
 </div>
 <div class="w3-row">
 <div class="w3-col s2 w3-light-blue w3-padding">
-<h2>Channels</h2>
+<h2>Networks</h2>
 <p>
 {% for network_name_, channel_list in channels.items() %}
 <h3>{{ network_name_ }}</h3>
@@ -65,7 +65,7 @@ view_template = site_header + """
 <div class="w3-col s10 w3-light-gray w3-padding">
 <p>
 <table id="table_id">
-{%- for line in lines if line %}
+{%- for line in lines if line != ("", "") %}
 {% set time_str, line_str = ii_line_datefmt(line) %}
 <tr>
 <td>{{ time_str }}</td>
@@ -87,7 +87,7 @@ def ii_line_datefmt(line):
         t = humanize.naturaldelta(time.time() - int(words[0]))
         return t, " ".join(words[1:])
     except:
-        return "123", ""
+        return "", ""
 
 def get_channels(irc_dir):
     channels = dict()
