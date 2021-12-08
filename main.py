@@ -7,11 +7,13 @@ import argh
 import flask
 import humanize
 import requests
-import tailer
+
+import tail
 
 app = flask.Flask(__name__)
 
 irc_home = None
+display_n_messages = None
 
 site_header = """
 <html>
@@ -41,11 +43,11 @@ site_footer = """
 """
 
 view_template = site_header + """
-<div class="w3-container">
+<div class="w3-container w3-dark-gray">
 <h1>ii web frontend</h1>
 </div>
 <div class="w3-row">
-<div class="w3-col s2 w3-light-blue w3-padding">
+<div class="w3-col s2 w3-blue-gray w3-padding">
 <h2>Networks</h2>
 <p>
 {% for network_name_, channel_list in channels.items() %}
@@ -98,6 +100,11 @@ def get_channels(irc_dir):
     return channels
 
 
+@app.route("/")
+def index():
+    flask.abort(404, "Please go to /chat/<irc_dir>, where irc_dir is what you ran ii with. This might be a username or some other identifier")
+
+
 @app.route("/chat/<irc_dir>")
 def chat_index(irc_dir):
     channels = get_channels(irc_dir)
@@ -112,7 +119,7 @@ def chat(irc_dir, network_name, channel_name):
     channels = get_channels(irc_dir)
 
     with open(irc_home / irc_dir / network_name / channel_name / "out") as f:
-        lines = tailer.tail(f, 25)
+        lines = tail.tail(f, display_n_messages)
 
     if flask.request.method == "POST":
         user_msg = flask.request.form.get("user_msg")
@@ -130,9 +137,11 @@ def chat(irc_dir, network_name, channel_name):
 
 
 
-def go(irc_home_="/home/ubuntu", port=12345, debug=False):
+def go(irc_home_="/home/ubuntu", display_n_messages_=25, port=12345, debug=False):
     global irc_home
     irc_home = pathlib.Path(irc_home_)
+    global display_n_messages
+    display_n_messages = display_n_messages_
     app.run(port=port, debug=debug)
 
 if __name__ == "__main__":
