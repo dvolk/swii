@@ -1,6 +1,6 @@
 # swii - silly web ii
 
-![swii screenshot](https://i.imgur.com/M9gZ8qJ.png)
+![swii screenshot](https://i.imgur.com/dOWjWrt.png)
 
 swii is a very simple, no javascript web frontend for ii (https://tools.suckless.org/ii/)
 
@@ -8,14 +8,21 @@ You need ii installed and at least one instance running and connected to a serve
 
 ## Install and run
 
-    pip3 install argh flask humanize requests tailer
+- Install and run `ii`
+
+- Install `swii` dependencies:
+
+    pip3 install argh flask humanize
+
+- Run `swii`:
+
     python3 main.py --irc_home <dir> --port <port>
 
 Here `dir` is the directory containing your `ii` directories.
 
 For example if you started your ii as `ii -i /home/username/irc` then your `irc_home` would be `/home/username`
 
-Now open your browser at `http(s)://<yourhost>:<yourport>/chat/<dir>`
+Now open your browser at `http(s)://localhost:<yourport>/chat/<dir>`
 
 ## Public-facing swii
 
