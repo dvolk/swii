@@ -1,6 +1,6 @@
 # swii - silly web ii
 
-![swii screenshot](https://i.imgur.com/dOWjWrt.png)
+![swii screenshot](https://i.imgur.com/KbDq9OK.png)
 
 swii is a very simple, no javascript web frontend for ii (https://tools.suckless.org/ii/)
 
