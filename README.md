@@ -1,14 +1,14 @@
-# swii - silly web irc interface
+# swii - silly web IRC interface
 
 ![swii screenshot](https://i.imgur.com/KbDq9OK.png)
 
-`swii` is a very simple, no-javascript* web client for IRC. It uses `ii` to handle the irc protocol (https://tools.suckless.org/ii/)
+`swii` is a very simple, no-javascript[*] web client for IRC. It uses `ii` to handle the irc protocol (https://tools.suckless.org/ii/)
 
 You need `ii` installed and at least one instance running and connected to a server (see above url for instructions). 
 
 `swii` can use multiple ii's connected to different servers.
 
-* a tiny bit of javascript is used to refresh the page periodically, and to stop refreshing if any text is selected on the page or the user writes anything in the message box. However this is optional. It fully works without javascript.
+[*] a tiny bit of javascript is used to refresh the page periodically, and to stop refreshing if any text is selected on the page or the user writes anything in the message box. However this is optional. You can disable javascript and manually refresh the page or use a browser extension.
 
 ## Install and run
 
