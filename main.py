@@ -42,6 +42,9 @@ site_footer = """
 {% if reload_page %}
    window.setInterval(function() {
       var msgboxtext = document.getElementById("msgtextbox").value;
+      console.log(document.hidden);
+      console.log(document.getSelection().toString())
+      console.log(msgboxtext);
       if (!document.hidden && document.getSelection().toString() == "" && msgboxtext == "") {
          window.location.reload(1);
       }
@@ -52,11 +55,9 @@ site_footer = """
 
 </html>
 """
-
 view_template = site_header + """
-<div class="w3-container">
-<h1>ii web frontend</h1>
-</div>
+<br/>
+{% if not phone_mode %}
 <div class="w3-row">
 <div class="w3-col s2 w3-2021-mint w3-padding">
 <h2>Networks</h2>
@@ -75,7 +76,12 @@ view_template = site_header + """
 {% endfor %}
 </p>
 </div>
-<div class="w3-col s10 w3-light-gray w3-padding">
+{% endif %}
+{% if phone_mode %}
+<div class="w3-col w3-light-gray">
+{% else %}
+<div class="w3-col w3-light-gray s10 w3-padding">
+{% endif %}
 <p>
   <a href="{{url_for('chat', irc_dir=irc_dir, network_name=network_name, channel_name=channel_name, skip=skip+25,start=start+25) }}">
     Up 25 messages
@@ -91,6 +97,7 @@ view_template = site_header + """
 {% endif %}
 </p>
 <p>
+{% if not phone_mode %}
 <table id="table_id">
 {%- for line in lines if line != ("", "", "") %}
 {% set time_str, nick_str, line_str = ii_line_fmt(line) %}
@@ -108,6 +115,17 @@ view_template = site_header + """
 {% endif %}
 {% endfor %}
 </table>
+{% endif %}
+{% if phone_mode %}
+{% for line in lines if line != ("", "", "") %}
+{% set time_str, nick_str, line_str = ii_line_fmt(line) %}
+{% if nick_str %}
+  {{ color_nickname(nick_str)|safe }} {{ line_str }}<br/>
+{% else %}
+  <span style="padding-left: 5px; color: #999">{{ line_str }}</span><br/>
+{% endif %}
+{% endfor %}
+{% endif %}
 </p>
 <form method="POST">
 <p>
@@ -121,7 +139,6 @@ colors = ["w3-red", "w3-pink", "w3-purple", "w3-indigo", "w3-light-blue", "w3-cy
 def color_nickname(nickname):
     color = colors[abs(hash(nickname)) % len(colors)]
     html_str = f"""<span style="padding: 1px;" class="w3-round { color }">{ nickname[1:-1] }</span>"""
-    print(color, html_str)
     return html_str
 
 
@@ -164,6 +181,7 @@ def chat(irc_dir, network_name, channel_name):
     channels = get_channels(irc_dir)
     start = int(flask.request.args.get("start", "25"))
     skip = int(flask.request.args.get("skip", "0"))
+    phone_mode = bool(flask.request.args.get("phone"))
 
     reload_page = False
     if skip == 0 and flask.request.args.get("reload_page") != "False":
@@ -186,7 +204,8 @@ def chat(irc_dir, network_name, channel_name):
                                             ii_line_fmt=ii_line_fmt,
                                             color_nickname=color_nickname,
                                             skip=skip, start=start,
-                                            reload_page=reload_page)
+                                            reload_page=reload_page,
+                                            phone_mode=phone_mode)
 
 
 
