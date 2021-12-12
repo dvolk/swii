@@ -4,7 +4,7 @@
 
 `swii` is a very simple, no-javascript[*] web client for IRC. It uses `ii` to handle the irc protocol (https://tools.suckless.org/ii/)
 
-You need `ii` installed and at least one instance running and connected to a server (see above url for instructions). 
+You need `ii` installed and at least one instance running and connected to a server (see above url for instructions).
 
 `swii` can use multiple ii's connected to different servers.
 
@@ -16,7 +16,7 @@ Install and run `ii`
 
 Install `swii` dependencies:
 
-    pip3 install argh flask humanize
+    pip3 install argh flask humanize waitress
 
 Run `swii`:
 
@@ -27,7 +27,7 @@ Here `dir` is the directory containing your `ii` directories.
 For example if you started your ii as `ii -i /home/username/irc` then your `irc_home` would be `/home/username`
 
 Open your browser at `http(s)://localhost:<yourport>/chat/<dir>`
-    
+
 ## Public-facing swii
 
 If you want to run `swii` on a public host, you should configure your web server to use basic authentication.
