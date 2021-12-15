@@ -1,4 +1,6 @@
-# swii - silly web IRC interface
+# swii - simple web IRC interface
+
+![workflow](https://github.com/dvolk/swii/actions/workflows/test_swii.yml/badge.svg)
 
 `swii` is a simple Python web IRC client.
 
