@@ -1,6 +1,6 @@
 # from findneighbour4
 
-name: Test catii
+name: Test swii on latest Ubuntu
 on:
   workflow_dispatch:
     inputs:
