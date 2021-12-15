@@ -26,6 +26,7 @@ jobs:
       run: |
         sleep 10
         ii -i iiirc -s localhost -n testuser
+        sleep 10
     - name: Join channel with ii
       run: |
         sleep 3
