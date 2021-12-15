@@ -21,8 +21,10 @@ jobs:
         sudo apt install ii
         sudo apt install python3-pip
         pip3 install argh flask humanize waitress
+        sleep 10
     - name: Connect ii to localhost
       run: |
+        sleep 10
         ii -i iiirc -s localhost -n testuser
     - name: Join channel with ii
       run: |
