@@ -1,0 +1,41 @@
+# from findneighbour4
+
+name: Test catii
+on:
+  workflow_dispatch:
+    inputs:
+      tags:
+        description: 'Test catii on latest Ubuntu'
+  push:
+    branches:
+    - '*'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: Install deps
+      run: |
+        apt install ii
+        apt install python3-pip
+        pip3 install argh flask humanize waitress
+        apt install ircd-hybrid
+    - name: Connect ii to localhost
+      run: |
+        ii -i iiirc -s localhost -n testuser
+    - name: Join channel with ii
+      run: |
+        sleep 3
+        echo "/j #test" > iiirc/in
+    - name: clone swii
+      run: |
+        git clone https://github.com/dvolk/swii
+    - name: Start swii
+      run: |
+        cd swii
+        nohup python3 main.py -i . --display-n-messages 25 -p 12345 -r 30
+    - name: curl swii page
+      run: |
+        sleep 5
+        curl https://localhost:12345/chat/iiirc/localhost/$test
