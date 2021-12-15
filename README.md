@@ -1,6 +1,6 @@
 # swii - silly web IRC interface
 
-![swii screenshot](https://i.imgur.com/KbDq9OK.png)
+![swii screenshot](https://i.imgur.com/NY2EJTR.png)
 
 `swii` is a very simple, no-javascript[*] web client for IRC. It uses `ii` to handle the irc protocol (https://tools.suckless.org/ii/)
 
