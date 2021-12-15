@@ -28,7 +28,7 @@ jobs:
     - name: Join channel with ii
       run: |
         sleep 3
-        echo "/j #test" > iiirc/localhost/in
+        echo "/j #test" > iiirc/127.0.0.1/in
     - name: clone swii
       run: |
         git clone https://github.com/dvolk/swii
