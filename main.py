@@ -21,14 +21,17 @@ reload_speed = None
 last_viewed_timestamp = collections.defaultdict(int)
 
 
+with open("static/w3.css") as f:
+    css = f.read()
+
+
 site_header = """
 <html>
   <head>
     <meta name="viewport" content="width=device-width,initial-scale=1">
-    <link rel="stylesheet" href="/static/w3.css">
-    <link rel="stylesheet" href="/static/w3-colors-2021.css">
-    <link rel='shortcut icon' type='image/x-icon' href='/static/favicon.ico' />
+    <link rel='shortcut icon' type='image/x-icon' href='/static/favicon.ico'/>
     <style>
+{{ css }}
       body, h1, h2, h3, h4, h5, h6 {
       font-family: Arial, Helvetica, sans-serif;
       }
@@ -39,7 +42,7 @@ site_header = """
       td a { color: revert; text-decoration: revert }
       span.line a { color: revert; text-decoration: revert }
     </style>
-    <title>{{ network_name }}/{{ channel_name }}</title>
+    <title>{{ channel_name }} @ {{ network_name }}</title>
   </head>
   <body>
 """
@@ -47,6 +50,7 @@ site_header = """
 site_footer = """
 </div>
 <script>
+  var last_focused = 0;
   {% if reload_page %}
     window.setInterval(function() {
     /* Don't reload if:
@@ -54,16 +58,32 @@ site_footer = """
     2. Any text is selected on the page
     3. The message text box is in focus
     */
+    var dt =  Date.now() - last_focused;
     var should_reload_page = !document.hidden &&
-    document.getSelection().toString() == "" &&
-    document.activeElement.id != "msgtextbox"
+                              document.getSelection().toString() == "" &&
+                              document.activeElement.id != "msgtextbox" &&
+                              dt > {{ reload_speed*100 }};
     if (should_reload_page) {
-    window.location.reload(1);
+        window.location.reload(1);
+        last_focused = Date.now();
     }
     else {
-    document.getElementById("reload_status").innerHTML = "Reloading paused"
+        document.getElementById("reload_status").innerHTML = "Reloading paused"
     }
     }, {{ reload_speed*1000 }})
+    document.addEventListener( 'visibilitychange' , function() {
+        var dt =  Date.now() - last_focused;
+        console.log(dt);
+        if (document.hidden) {
+            last_focused = Date.now();
+            console.log('bye');
+        } else {
+            if(dt > {{ reload_speed*100 }}) {
+                 window.location.reload(1);
+            }
+            console.log('well back');
+        }
+    }, false );
   {% endif %}
 </script>
 </body>
@@ -85,7 +105,7 @@ view_template = (
           {% if network_name == network_name_ and channel_name_ == channel_name %}
             <b>{{ channel_name }}</b><br/>
           {% else %}
-            <a class="menu" href="/chat/{{ irc_dir }}/{{ network_name_ }}/{{ channel_name_|replace("#","$") }}">{{ channel_name_ }}</a><br/>
+            <a class="menu" href="{{ url_for('chat', irc_dir=irc_dir, network_name=network_name_, channel_name=channel_name_|replace('#','$'), start=start, phone=phone, show_events=show_events) }}">{{ channel_name_ }}</a><br/>
           {% endif %}
         {% endfor %}
       </p>
@@ -118,7 +138,7 @@ view_template = (
     {% if not phone_mode %}
       <table width=100% id="table_id">
         {%- for line in lines if line != ("", "", "", "") %}
-          {% set epoch_time, time_str, nick_str, line_str = ii_line_fmt(line) %}
+          {% set epoch_time, time_str, nick_str, line_str = line %}
           <tr style="">
             <td>{{ time_str }}</td>
             {% if nick_str %}
@@ -127,20 +147,20 @@ view_template = (
               <td></td>
             {% endif %}
             {% if nick_str %}
-              <td width="99%" style="{% if epoch_time == ctx_last_viewed_timestamp %}border-bottom: 2px dashed red;{% endif %}">{{ line_str|urlize(trim_url_limit=40, nofollow=True, target="_blank") }}</td>
+              <td width="99%" style="{% if epoch_time == ctx_last_viewed_timestamp %}border-bottom: 2px dashed red;{% endif %}">{{ line_str|safe }}</td>
             {% else %}
-              <td width="99%" style="{% if epoch_time == ctx_last_viewed_timestamp %}border-bottom: 2px dashed red;{% endif %}color: #999">{{ line_str|urlize(trim_url_limit=40, nofollow=True, target="_blank") }}</td>
+              <td width="99%" style="{% if epoch_time == ctx_last_viewed_timestamp %}border-bottom: 2px dashed red;{% endif %}color: #999">{{ line_str|safe }}</td>
             {% endif %}
           {% endfor %}
       </table>
     {% endif %}
     {% if phone_mode %}
       {% for line in lines if line != ("", "", "", "") %}
-        {% set epoch_time, time_str, nick_str, line_str = ii_line_fmt(line) %}
+        {% set epoch_time, time_str, nick_str, line_str = line %}
         {% if nick_str %}
-          <span class="line" style="{% if epoch_time == ctx_last_viewed_timestamp %}border-bottom: 2px dashed red;{% endif %}">{{ color_nickname(nick_str)|safe }} {{ line_str|urlize(trim_url_limit=40, nofollow=True, target="_blank") }}<br/></span>
+          <span class="line" style="{% if epoch_time == ctx_last_viewed_timestamp %}border-bottom: 2px dashed red;{% endif %}">{{ color_nickname(nick_str)|safe }} {{ line_str|safe }}<br/></span>
         {% else %}
-          <span class="line" style="{% if epoch_time == ctx_last_viewed_timestamp %}border-bottom: 2px dashed red;{% endif %} padding-left: 5px; color: #999">{{ line_str }}</span><br/>
+          <span class="line" style="{% if epoch_time == ctx_last_viewed_timestamp %}border-bottom: 2px dashed red;{% endif %} padding-left: 5px; color: #999">{{ line_str|safe }}</span><br/>
         {% endif %}
       {% endfor %}
     {% endif %}
@@ -191,9 +211,8 @@ def color_nickname(nickname):
 def save_last_viewed_timestamp(lines, irc_dir, network_name, channel_name):
     global last_viewed_timestamp
     print(last_viewed_timestamp)
-    for line in reversed(lines):
+    for words in reversed(lines):
         try:
-            words = line.split()
             timestamp = int(words[0])
             last_viewed_timestamp[
                 f"{irc_dir}${network_name}${channel_name}"
@@ -201,18 +220,6 @@ def save_last_viewed_timestamp(lines, irc_dir, network_name, channel_name):
             return
         except:
             pass
-
-
-def ii_line_fmt(line):
-    try:
-        words = line.split()
-        t = humanize.naturaldelta(time.time() - int(words[0]))
-        if words[1][0] == "<":  # nickname
-            return int(words[0]), t, words[1], " ".join(words[2:])
-        else:
-            return int(words[0]), t, "", " ".join(words[1:])
-    except:
-        return "", "", "", ""
 
 
 def get_channels(irc_dir):
@@ -245,6 +252,18 @@ def chat_index(irc_dir):
     return chat(irc_dir, network_name, channel_name)
 
 
+def ii_line_fmt(line):
+    try:
+        words = line.split()
+        t = humanize.naturaldelta(time.time() - int(words[0]))
+        if words[1][0] == "<":  # nickname
+            return int(words[0]), t, words[1], " ".join(words[2:])
+        else:
+            return int(words[0]), t, "", " ".join(words[1:])
+    except:
+        return "", "", "", ""
+
+
 @app.route("/chat/<irc_dir>/<network_name>/<channel_name>", methods=["GET", "POST"])
 def chat(irc_dir, network_name, channel_name):
     global last_viewed_timestamp
@@ -253,13 +272,23 @@ def chat(irc_dir, network_name, channel_name):
     start = int(flask.request.args.get("start", "25"))
     skip = int(flask.request.args.get("skip", "0"))
     phone_mode = bool(flask.request.args.get("phone") == "True")
+    show_events = bool(flask.request.args.get("show_events") == "True")
 
     reload_page = False
     if skip == 0 and flask.request.args.get("reload_page") != "False":
         reload_page = True
 
-    with open(irc_home / irc_dir / network_name / channel_name / "out") as f:
-        lines = tail.tail(f, start + skip)[skip:start]
+    if show_events:
+        with open(
+            irc_home / irc_dir / network_name / channel_name / "out", errors="ignore"
+        ) as f:
+            lines = tail.tail(f, start + skip)[skip:start]
+    else:
+        with open(
+            irc_home / irc_dir / network_name / channel_name / "out", errors="ignore"
+        ) as f:
+            lines = tail.chat_only_tail(f, start + skip)[skip:start]
+
     ctx_hash = f"{irc_dir}${network_name}${channel_name}"
     ctx_last_viewed_timestamp = last_viewed_timestamp[ctx_hash]
     save_last_viewed_timestamp(lines, irc_dir, network_name, channel_name)
@@ -284,6 +313,7 @@ def chat(irc_dir, network_name, channel_name):
         return flask.render_template_string(
             view_template,
             irc_dir=irc_dir,
+            css=css,
             network_name=network_name,
             channel_name=channel_name,
             channels=channels,
