@@ -25,7 +25,7 @@ jobs:
     - name: Connect ii to localhost
       run: |
         sleep 10
-        ii -i iiirc -s 127.0.0.1 -n testuser
+        nohup ii -i iiirc -s 127.0.0.1 -n testuser &
         sleep 10
     - name: Join channel with ii
       run: |
@@ -37,7 +37,7 @@ jobs:
     - name: Start swii
       run: |
         cd swii
-        nohup python3 main.py -i . --display-n-messages 25 -p 12345 -r 30
+        nohup python3 main.py -i . --display-n-messages 25 -p 12345 -r 30 &
     - name: curl swii page
       run: |
         sleep 5
