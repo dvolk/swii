@@ -39,4 +39,4 @@ jobs:
     - name: curl swii page
       run: |
         sleep 5
-        curl --head -f http://localhost:12345/chat/iiirc/localhost/$test
+        curl --head -f http://localhost:12345/chat/iiirc/localhost/%24test
