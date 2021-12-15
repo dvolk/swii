@@ -1,6 +1,6 @@
 # swii - silly web IRC interface
 
-`swii` is a simple web client for IRC.
+`swii` is a simple Python web IRC client.
 
 # Screenshot
 
@@ -36,6 +36,7 @@ Join at least once channel:
 
 Install `swii` dependencies:
 
+    apt install python3-pip
     pip3 install argh flask humanize waitress
 
 Run `swii`:
