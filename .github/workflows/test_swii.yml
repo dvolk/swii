@@ -25,7 +25,7 @@ jobs:
     - name: Connect ii to localhost
       run: |
         sleep 10
-        ii -i iiirc -s localhost -n testuser
+        ii -i iiirc -s 127.0.0.1 -n testuser
         sleep 10
     - name: Join channel with ii
       run: |
