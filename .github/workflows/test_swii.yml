@@ -29,6 +29,8 @@ jobs:
       run: |
         sleep 3
         echo "/j #test" > iiirc/127.0.0.1/in
+        sleep 2
+        tree iiirc
     - name: clone swii
       run: |
         git clone https://github.com/dvolk/swii
