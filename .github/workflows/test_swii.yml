@@ -37,7 +37,7 @@ jobs:
     - name: Start swii
       run: |
         cd swii
-        nohup python3 main.py -i . --display-n-messages 25 -p 12345 -r 30 &
+        nohup python3 main.py -i .. --display-n-messages 25 -p 12345 -r 30 &
     - name: curl swii page
       run: |
         sleep 5
