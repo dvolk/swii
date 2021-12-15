@@ -1,11 +1,9 @@
-# from findneighbour4
-
 name: Test swii on latest Ubuntu
 on:
   workflow_dispatch:
     inputs:
       tags:
-        description: 'Test catii on latest Ubuntu'
+        description: 'Test swii on latest Ubuntu'
   push:
     branches:
     - '*'
@@ -41,4 +39,4 @@ jobs:
     - name: curl swii page
       run: |
         sleep 5
-        curl https://localhost:12345/chat/iiirc/localhost/$test
+        curl --head -f http://localhost:12345/chat/iiirc/localhost/$test
