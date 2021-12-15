@@ -17,10 +17,10 @@ jobs:
     - uses: actions/checkout@v2
     - name: Install deps
       run: |
-        apt install ii
-        apt install python3-pip
+        sudo apt install ircd-hybrid
+        sudo apt install ii
+        sudo apt install python3-pip
         pip3 install argh flask humanize waitress
-        apt install ircd-hybrid
     - name: Connect ii to localhost
       run: |
         ii -i iiirc -s localhost -n testuser
