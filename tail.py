@@ -21,6 +21,7 @@ def ii_line_fmt(line):
         t = humanize.naturaldelta(time.time() - int(words[0]))
         if words[1][0] == "<":  # nickname
             new_line, _ = urlize.urlize(" ".join(words[2:]), target="blank")
+            new_line = urlize.colorize_irc2html(new_line)
             return int(words[0]), t, words[1], new_line
         else:
             return int(words[0]), t, "", " ".join(words[1:])

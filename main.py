@@ -174,36 +174,37 @@ view_template = (
     + site_footer
 )
 
-colors = [
-    "w3-red",
-    "w3-pink",
-    "w3-purple",
-    "w3-indigo",
-    "w3-light-blue",
-    "w3-cyan",
+nick_colors = [
+    "w3-amber",
     "w3-aqua",
-    "w3-teal",
+    "w3-blue",
+    "w3-light-blue",
+    "w3-brown",
+    "w3-cyan",
+    "w3-blue-grey",
     "w3-green",
     "w3-light-green",
-    "w3-sand",
+    "w3-indigo",
     "w3-khaki",
-    "w3-yellow",
-    "w3-amber",
+    "w3-lime",
     "w3-orange",
     "w3-deep-orange",
-    "w3-blue-gray",
-    "w3-brown",
-    "w3-gray",
-    "w3-dark-gray",
+    "w3-pink",
+    "w3-purple",
+    "w3-deep-purple",
+    "w3-red",
+    "w3-sand",
+    "w3-teal",
+    "w3-yellow",
     "w3-pale-red",
-    "w3-pale-yellow",
     "w3-pale-green",
+    "w3-pale-yellow",
     "w3-pale-blue",
 ]
 
 
 def color_nickname(nickname):
-    color = colors[abs(hash(nickname)) % len(colors)]
+    color = nick_colors[abs(hash(nickname)) % len(nick_colors)]
     html_str = f"""<span style="padding: 1px;" class="w3-round { color }">{ nickname[1:-1] }</span>"""
     return html_str
 
@@ -250,18 +251,6 @@ def chat_index(irc_dir):
     network_name = list(channels.keys())[0]
     channel_name = channels[network_name][0]
     return chat(irc_dir, network_name, channel_name)
-
-
-def ii_line_fmt(line):
-    try:
-        words = line.split()
-        t = humanize.naturaldelta(time.time() - int(words[0]))
-        if words[1][0] == "<":  # nickname
-            return int(words[0]), t, words[1], " ".join(words[2:])
-        else:
-            return int(words[0]), t, "", " ".join(words[1:])
-    except:
-        return "", "", "", ""
 
 
 @app.route("/chat/<irc_dir>/<network_name>/<channel_name>", methods=["GET", "POST"])
@@ -318,7 +307,6 @@ def chat(irc_dir, network_name, channel_name):
             channel_name=channel_name,
             channels=channels,
             lines=lines,
-            ii_line_fmt=ii_line_fmt,
             color_nickname=color_nickname,
             skip=skip,
             start=start,

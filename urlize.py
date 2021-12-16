@@ -37,6 +37,80 @@ _http_re = re.compile(
 )
 _email_re = re.compile(r"^\S+@\w[\w.-]*\.\w+$")
 
+colors = [
+    "w3-2021-marigold",
+    "w3-2021-cerulean",
+    "w3-2021-rust",
+    "w3-2021-illuminating",
+    "w3-2021-french-blue",
+    "w3-2021-green-ash",
+    "w3-2021-burnt-coral",
+    "w3-2021-mint",
+    "w3-2021-amethyst-orchid",
+    "w3-2021-raspberry-sorbet",
+    "w3-2021-inkwell",
+    "w3-2021-ultimate-gray",
+    "w3-2021-buttercream",
+    "w3-2021-desert-mist",
+    "w3-2021-willow",
+    "w3-2020-classic-blue",
+    "w3-2020-flame-scarlet",
+    "w3-2020-saffron",
+    "w3-2020-biscay-green",
+    "w3-2020-chive",
+    "w3-2020-faded-denim",
+    "w3-2020-orange-peel",
+    "w3-2020-mosaic-blue",
+    "w3-2020-sunlight",
+    "w3-2020-coral-pink",
+    "w3-2020-cinnamon-stick",
+    "w3-2020-grape-compote",
+    "w3-2020-lark",
+    "w3-2020-navy-blazer",
+    "w3-2020-brilliant-white",
+    "w3-2020-ash",
+    "w3-2020-amberglow",
+    "w3-2020-samba",
+    "w3-2020-sandstone",
+    "w3-2020-green-sheen",
+    "w3-2020-rose-tan",
+    "w3-2020-ultramarine-green",
+    "w3-2020-fired-brick",
+    "w3-2020-peach-nougat",
+    "w3-2020-magenta-purple",
+]
+
+
+def colorize_irc2html(line):
+    in_bold = False
+    in_color = False
+    line_ = list(line)
+    for i, ch in enumerate(line):
+        if ch == "\x02":
+            if in_bold:
+                in_bold = False
+                line_[i] = "</b>"
+            else:
+                in_bold = True
+                line_[i] = "<b>"
+        if ch == "\x03":
+            if in_color:
+                in_color = False
+                line_[i] = "</span>"
+            else:
+                if line[i + 2].isdigit():
+                    color = int(line[i + 1] + line[i + 2])
+                    if color > len(color):
+                        color = int(line[i + 1])
+                    line_[i + 1] = ""
+                    line_[i + 2] = ""
+                else:
+                    line_[i + 1] = ""
+                    color = int(line[i + 1])
+                line_[i] = f'<span class="{ colors[color] }">'
+                in_color = True
+    return "".join(line_)
+
 
 def urlize(
     text: str,
