@@ -2,10 +2,6 @@
 
 ![workflow](https://github.com/dvolk/swii/actions/workflows/test_swii.yml/badge.svg)
 
-`swii` is a simple Python web IRC client.
-
-# Screenshot
-
 ![swii screenshot](https://i.imgur.com/uMhkNho.png)
 
 # Features
