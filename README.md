@@ -4,8 +4,8 @@
 
 <table>
     <tr>
-        <td>Desktop mode</td>
-        <td>Phone mode</td>
+        <th>Desktop mode</th>
+        <th>Phone mode</th>
     </tr>
     <tr>
         <td width=75%><img src="https://i.imgur.com/uMhkNho.png"></td>
