@@ -12,6 +12,7 @@
         <td width=25%><img src="https://i.imgur.com/wySOLvt.png"></td>
     </tr>
     </table>
+
 # Features
 
 * No javascript required
