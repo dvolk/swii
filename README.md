@@ -9,7 +9,7 @@
     </tr>
     <tr>
         <td width=75%><img src="https://i.imgur.com/uMhkNho.png"></td>
-        <td width=25%><img src="https://i.imgur.com/T0OKefB.png"></td>
+        <td width=25%><img src="https://i.imgur.com/wySOLvt.png"></td>
     </tr>
     </table>
 # Features
