@@ -32,9 +32,26 @@ site_header = """
     <link rel='shortcut icon' type='image/x-icon' href='/static/favicon.ico'/>
     <style>
 {{ css }}
+      html { overflow: -moz-scrollbars-none; }
       body, h1, h2, h3, h4, h5, h6 {
       font-family: Arial, Helvetica, sans-serif;
       }
+          @-moz-document url-prefix() { /* Disable scrollbar Firefox */
+            html{
+              scrollbar-width: none;
+            }
+          }
+          body {
+            margin: 0; /* remove default margin */
+            scrollbar-width: none; /* Also needed to disable scrollbar Firefox */
+            -ms-overflow-style: none;  /* Disable scrollbar IE 10+ */
+            overflow-y: scroll;
+          }
+          body::-webkit-scrollbar {
+            width: 0px;
+            background: transparent; /* Disable scrollbar Chrome/Safari/Webkit */
+          }
+
       #table_id td:nth-child(1)  {white-space: nowrap; color: #999; vertical-align: top;}
       #table_id td:nth-child(2)  {white-space: nowrap; vertical-align: top; text-align:right}
       a { margin-right: 5px; text-decoration: none }
@@ -50,9 +67,24 @@ site_header = """
 site_footer = """
 </div>
 <script>
+function notifyMe(msg) {
+  console.log(msg)
+  if (Notification.permission === "granted") {
+    var notification = new Notification(msg);
+  }
+  else if (Notification.permission !== "denied") {
+    Notification.requestPermission().then(function (permission) {
+      if (permission === "granted") {
+        var notification = new Notification(msg);
+      }
+    });
+  }
+}
+
   var last_focused = 0;
   {% if reload_page %}
     window.setInterval(function() {
+notifyMe("hello");
     /* Don't reload if:
     1. The page is hidden
     2. Any text is selected on the page
@@ -105,7 +137,9 @@ view_template = (
           {% if network_name == network_name_ and channel_name_ == channel_name %}
             <b>{{ channel_name }}</b><br/>
           {% else %}
-            <a class="menu" href="{{ url_for('chat', irc_dir=irc_dir, network_name=network_name_, channel_name=channel_name_|replace('#','$'), start=start, phone=phone, show_events=show_events) }}">{{ channel_name_ }}</a><br/>
+            <a class="menu" href="{{ url_for('chat', irc_dir=irc_dir, network_name=network_name_, channel_name=channel_name_|replace('#','$'), start=start, phone=phone, show_events=show_events) }}">
+              <span {% if channel_name_ in channels_inactive %} style="text-decoration: line-through" {% endif %}>{{ channel_name_ }}</span>
+            </a><br/>
           {% endif %}
         {% endfor %}
       </p>
@@ -224,17 +258,26 @@ def save_last_viewed_timestamp(lines, irc_dir, network_name, channel_name):
 
 
 def get_channels(irc_dir):
-    channels = dict()
+    channels_active = dict()
+    channels_inactive = dict()
     networks = [x.name for x in (irc_home / irc_dir).glob("*")]
     for network in networks:
-        channels__ = sorted((irc_home / irc_dir / network).glob("*"))
-        channels_ = [
-            x.name
-            for x in channels__
-            if x.name != "in" and x.name != "out" and (x / "out").is_file()
-        ]
-        channels[network] = channels_
-    return channels
+        channels = sorted((irc_home / irc_dir / network).glob("*"))
+        channels_active_ = list()
+        channels_inactive_ = list()
+        for channel in channels:
+            if (
+                channel.name != "in"
+                and channel.name != "out"
+                and (channel / "out").is_file()
+            ):
+                if (channel / "in").is_fifo():
+                    channels_active_.append(channel.name)
+                else:
+                    channels_inactive_.append(channel.name)
+        channels_active[network] = channels_active_
+        channels_inactive[network] = channels_inactive_
+    return channels_active, channels_inactive
 
 
 @app.route("/")
@@ -247,7 +290,7 @@ def index():
 
 @app.route("/chat/<irc_dir>")
 def chat_index(irc_dir):
-    channels = get_channels(irc_dir)
+    channels, _ = get_channels(irc_dir)
     network_name = list(channels.keys())[0]
     channel_name = channels[network_name][0]
     return chat(irc_dir, network_name, channel_name)
@@ -257,7 +300,8 @@ def chat_index(irc_dir):
 def chat(irc_dir, network_name, channel_name):
     global last_viewed_timestamp
     channel_name = channel_name.replace("$", "#")
-    channels = get_channels(irc_dir)
+    channels_active, channels_inactive = get_channels(irc_dir)
+    print(channels_inactive)
     start = int(flask.request.args.get("start", "25"))
     skip = int(flask.request.args.get("skip", "0"))
     phone_mode = bool(flask.request.args.get("phone") == "True")
@@ -285,6 +329,16 @@ def chat(irc_dir, network_name, channel_name):
     if ctx_last_viewed_timestamp == last_viewed_timestamp[ctx_hash]:
         ctx_last_viewed_timestamp = 0
 
+    channels = collections.defaultdict(list)
+    for x, y in channels_active.items():
+        channels[x] += y
+    for x, y in channels_inactive.items():
+        channels[x] += y
+    print(channels)
+
+    channels_active = sum(channels_active.values(), list())
+    channels_inactive = sum(channels_inactive.values(), list())
+
     if flask.request.method == "POST":
         user_msg = flask.request.form.get("user_msg")
         print(flask.request.form)
@@ -306,6 +360,8 @@ def chat(irc_dir, network_name, channel_name):
             network_name=network_name,
             channel_name=channel_name,
             channels=channels,
+            channels_active=channels_active,
+            channels_inactive=channels_inactive,
             lines=lines,
             color_nickname=color_nickname,
             skip=skip,
