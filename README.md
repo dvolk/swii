@@ -2,7 +2,16 @@
 
 ![workflow](https://github.com/dvolk/swii/actions/workflows/test_swii.yml/badge.svg)
 
-![swii screenshot](https://i.imgur.com/uMhkNho.png)
+<table>
+    <tr>
+        <th>Desktop mode</th>
+        <th>Phone mode</th>
+    </tr>
+    <tr>
+        <td width=75%><img src="https://i.imgur.com/uMhkNho.png"></td>
+        <td width=25%><img src="https://i.imgur.com/wySOLvt.png"></td>
+    </tr>
+    </table>
 
 # Features
 
